@@ -5,15 +5,11 @@ import (
 	"encoding/json"
 	_ "github.com/lib/pq"
 	"log"
-	// "net"
 	"net/http"
 	"os"
-	// "strings"
 )
 
 // This is a type to hold our word definitions in
-// we specifiy both bson (for MongoDB) and json (for web)
-// naming for marshalling and unmarshalling
 type item struct {
 	Word       string `json:"word"`
 	Definition string `json:"definition"`
