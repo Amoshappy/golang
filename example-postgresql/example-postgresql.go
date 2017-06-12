@@ -3,14 +3,16 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/lib/pq"
 )
 
 // This is a type to hold our word definitions in
 type item struct {
+	ID         string `json:"id"`
 	Word       string `json:"word"`
 	Definition string `json:"definition"`
 }
@@ -20,7 +22,7 @@ var db *sql.DB
 func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		rows, err := db.Query("SELECT word,definition FROM words")
+		rows, err := db.Query("SELECT id,word,definition FROM words")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -33,7 +35,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		items = make([]*item, 0)
 		for rows.Next() {
 			myitem := new(item)
-			err = rows.Scan(&myitem.Word, &myitem.Definition)
+			err = rows.Scan(&myitem.ID, &myitem.Word, &myitem.Definition)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -76,7 +78,10 @@ func main() {
 	db = mydb // Copy to global
 	defer db.Close()
 
-	_, err = db.Query("CREATE TABLE IF NOT EXISTS words (word varchar(256) NOT NULL, definition varchar(256) NOT NULL)")
+	_, err = db.Query(`CREATE TABLE IF NOT EXISTS words (
+		id serial primary key,
+		word varchar(256) NOT NULL, 
+		definition varchar(256) NOT NULL)`)
 
 	if err != nil {
 		log.Fatal(err)
