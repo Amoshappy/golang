@@ -51,6 +51,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 			Index("example").
 			Type("word").
 			BodyJson(newitem).
+			Refresh("true").
 			Do(context.TODO())
 		if err != nil {
 			log.Fatal(err)
