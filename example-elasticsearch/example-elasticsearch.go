@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -23,8 +24,8 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		searchResult, err := myclient.Search().
-			Index("example").
-			Type("word").
+			Index("grand_tour").
+			Type("words").
 			//		Sort("added", false).
 			Do(context.TODO())
 		if err != nil {
@@ -48,8 +49,8 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 			r.Form.Get("definition")}
 
 		_, err := myclient.Index().
-			Index("example").
-			Type("word").
+			Index("grand_tour").
+			Type("words").
 			BodyJson(newitem).
 			Refresh("true").
 			Do(context.TODO())
@@ -64,7 +65,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	esuri := os.Getenv("COMPOSEESURI")
+	esuri := os.Getenv("COMPOSE_ELASTICSEARCH_URL")
 
 	client, err := elastic.NewClient(elastic.SetURL(esuri), elastic.SetSniff(false))
 
@@ -74,13 +75,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	exists, err := client.IndexExists("examples").Do(context.TODO())
+	// Check if index exists.
+	exists, err := client.IndexExists("grand_tour").Do(context.TODO())
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// If not, create it
 	if !exists {
-		_, err := client.CreateIndex("examples").Do(context.TODO())
+		_, err := client.CreateIndex("grand_tour").Do(context.TODO())
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -89,5 +92,6 @@ func main() {
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
 	http.HandleFunc("/words", wordHandler)
+	fmt.Println("Listening on localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
