@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -24,7 +25,7 @@ var myetcdclient *clientv3.Client
 func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		resp, err := myetcdclient.Get(context.TODO(), "/words/", clientv3.WithPrefix())
+		resp, err := myetcdclient.Get(context.TODO(), "/grand_tour/words/", clientv3.WithPrefix())
 
 		if err != nil {
 			log.Fatal(err)
@@ -47,7 +48,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	case "PUT":
 		r.ParseForm()
-		_, err := myetcdclient.Put(context.TODO(), "/words/"+r.Form.Get("word"), r.Form.Get("definition"))
+		_, err := myetcdclient.Put(context.TODO(), "/grand_tour/words/"+r.Form.Get("word"), r.Form.Get("definition"))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -60,9 +61,9 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	endpointlist := os.Getenv("COMPOSEETCDENDPOINTS")
-	username := os.Getenv("COMPOSEETCDUSER")
-	password := os.Getenv("COMPOSEETCDPASS")
+	endpointlist := os.Getenv("COMPOSE_ETCD_ENDPOINTS")
+	username := os.Getenv("COMPOSE_ETCD_USER")
+	password := os.Getenv("COMPOSE_ETCD_PASS")
 
 	endpoints := strings.Split(endpointlist, ",")
 
@@ -84,5 +85,6 @@ func main() {
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
 	http.HandleFunc("/words", wordHandler)
+	fmt.Println("Listening on localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
