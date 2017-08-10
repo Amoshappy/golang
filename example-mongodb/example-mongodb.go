@@ -4,14 +4,16 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"strings"
+
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // This is a type to hold our word definitions in
@@ -31,7 +33,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		// Use the session to get the DB and then the collection
 		// Using an empty string for DB() gets the datbase specified
 		// in the connection string
-		c := session.DB("").C("words")
+		c := session.DB("grand_tour").C("words")
 
 		// Create an array of
 		var items []item
@@ -47,7 +49,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	case "PUT":
 		r.ParseForm()
-		c := session.DB("").C("words")
+		c := session.DB("grand_tour").C("words")
 		newItem := item{Word: r.Form.Get("word"), Definition: r.Form.Get("definition")}
 		err := c.Insert(newItem)
 		if err != nil {
@@ -71,7 +73,7 @@ func main() {
 	// Create a certificate pool for root certificates
 	// Then load that pool with our certificate
 	roots := x509.NewCertPool()
-	if ca, err := ioutil.ReadFile("composecert.pem"); err == nil {
+	if ca, err := ioutil.ReadFile(os.Getenv("PATH_TO_MONGODB_CERT")); err == nil {
 		roots.AppendCertsFromPEM(ca)
 	}
 	// Then create a TLS config object
@@ -80,7 +82,7 @@ func main() {
 	tlsConfig.RootCAs = roots
 
 	// Get the environment variable with the connection string
-	connectionString := os.Getenv("COMPOSEMONGODBURL")
+	connectionString := os.Getenv("COMPOSE_MONGODB_URL")
 	// Currently mgo errors out if it sees the ?ssl=true option on the
 	// connectionString, so we'll trim that off
 	trimmedConnectionString := strings.TrimSuffix(connectionString, "?ssl=true")
@@ -108,5 +110,6 @@ func main() {
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
 	http.HandleFunc("/words", wordHandler)
+	fmt.Println("Listening on localhost:8080")
 	http.ListenAndServe(":8080", nil)
 }
