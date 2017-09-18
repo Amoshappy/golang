@@ -1,2 +1,3 @@
 example-mongodb/example-mongodb
 example-etcdv3/vendor/github.com/coreos/etcd/tools/functional-tester/.DS_Store
+example-rabbitmq/example-rabbitmq
