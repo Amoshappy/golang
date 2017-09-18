@@ -71,10 +71,11 @@ func main() {
 	// Connect to database:
 	// Connection string in $COMPOSEPOSTGRESQLURL
 	// Compse database certificate in composecert.pem
-	mydb, err := sql.Open("postgres", os.Getenv("COMPOSEPOSTGRESQLURL"))
+	mydb, err := sql.Open("postgres", os.Getenv("COMPOSE_POSTGRESQL_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	db = mydb // Copy to global
 	defer db.Close()
 
