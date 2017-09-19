@@ -2,7 +2,7 @@
 
 ## Build notes
 
-Before building, `run go get gopkg.in/mgo.v2` to install the appropriate library.
+Before building, run `go get gopkg.in/mgo.v2` to install the appropriate library.
 
 ## Run notes
 
