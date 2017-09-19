@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -69,15 +70,20 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Connect to database:
-	// Connection string in $COMPOSEPOSTGRESQLURL
-	// Compse database certificate in composecert.pem
-	mydb, err := sql.Open("postgres", os.Getenv("COMPOSE_POSTGRESQL_URL"))
+	// Connection string in $COMPOSE_POSTGRESQL_URL
+	// Compose database certificate in $PATH_TO_POSTGRESQL_CERT
+
+	myurl := os.Getenv("COMPOSE_POSTGRESQL_URL") + ("?sslmode=require&sslrootcert=" + os.Getenv("PATH_TO_POSTGRESQL_CERT"))
+	fmt.Println(myurl)
+	mydb, err := sql.Open("postgres", myurl)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	db = mydb // Copy to global
 	defer db.Close()
+
+	fmt.Println("Connected to PostgreSQL")
 
 	_, err = db.Query(`CREATE TABLE IF NOT EXISTS words (
 		id serial primary key,
@@ -91,5 +97,6 @@ func main() {
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
 	http.HandleFunc("/words", wordHandler)
+	fmt.Println("Listening on 8080")
 	http.ListenAndServe(":8080", nil)
 }
