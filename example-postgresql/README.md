@@ -1,10 +1,14 @@
-# Compose Grand Tour - Go - Elasticsearch
+# Compose Grand Tour - Go - PostgreSQL
 
 ## Build notes
 
-Before building, `run go get gopkg.in/olivere/elastic.v5` to install the appropriate library.
+Before building, run `go get -a` to install the lib/pq library.
+Build with `go build`.
+
 
 ## Run notes
 
-Set the `COMPOSE_ELASTICSEARCH_URL` environment variable to the Compose connection string for the Elasticsearch database. Remember to create a user for Elasticsearch and include that user's credentials in the URL.
+Set the `COMPOSE_POSTGRESQL_URL` environment variable to the Compose connection string for the PostgreSQL database. 
+Set the `PATH_TO_POSTGRESQL_CERT` to the full path of the self-signed certificate for the deployment.
+
 
