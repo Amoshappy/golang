@@ -16,7 +16,7 @@ import (
 
 // This is an item structure we use to hold definitions and to marshal JSON
 type item struct {
-	ID         gocql.UUID `json:"_id,omitempty" db:"my_table_id"`
+	ID         gocql.UUID `json:"_id,omitempty" db:"my_table_id"` // The added db: lets us set the name in the database
 	Word       string     `json:"word"`
 	Definition string     `json:"definition"`
 }
@@ -32,12 +32,13 @@ var addresstranslator composeaddresstranslator.ComposeAddressTranslator
 func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		stmt, names := qb.Select("examples.words").ToCql()
-		q := gocqlx.Query(session.Query(stmt), names)
-
-		var items []item
-
-		if err := gocqlx.Select(&items, q.Query); err != nil {
+		// Build a select statement
+		stmt, _ := qb.Select("examples.words").ToCql()
+		// Declare a slice for the results
+		var items []*item
+		// Send the query and get the results saved in the slice
+		err := gocqlx.Select(&items, session.Query(stmt))
+		if err != nil {
 			log.Fatal(err)
 		}
 
@@ -53,19 +54,27 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		// First, we parse the incoming form
 		r.ParseForm()
 
+		// We create an insert statement with the Query Builder, specifying which particular fields
+		// we wish to insert
 		stmt, names := qb.Insert("examples.words").Columns("my_table_id", "word", "definition").ToCql()
 
+		// Create a UUID
 		uuid, _ := gocql.RandomUUID()
 
+		// Create a new item struct
 		newitem := &item{
 			uuid,
 			r.Form.Get("word"),
 			r.Form.Get("definition"),
 		}
 
+		// Create a query which uses the built query and populates it with the
+		// values in the new item
 		q := gocqlx.Query(session.Query(stmt), names).BindStruct(newitem)
 
-		if err := q.ExecRelease(); err != nil {
+		// Run that query and release it when done
+		err := q.ExecRelease()
+		if err != nil {
 			log.Fatal(err)
 		}
 
