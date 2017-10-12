@@ -24,3 +24,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/gocql/gocql"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/scylladb/gocqlx"

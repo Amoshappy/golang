@@ -26,6 +26,18 @@
   revision = "e80d13ce29ede4452c43dea11e79b9bc8a15b478"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/jmoiron/sqlx"
+  packages = ["reflectx"]
+  revision = "d9bd385d68c068f1fabb5057e3dedcbcbb039d0f"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/scylladb/gocqlx"
+  packages = ["."]
+  revision = "a66169d3bab48ee2c05e5ce1bfd65e087ca2bed8"
+
+[[projects]]
   name = "gopkg.in/inf.v0"
   packages = ["."]
   revision = "3887ee99ecf07df5b447e9b00d9c0b2adaa9f3e4"
@@ -34,6 +46,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "533758401840ee7a8076067cc387a334483332c61e3674b9be8790fe8a66f408"
+  inputs-digest = "42f500ed62641ffd14105fe95c61eebba5d8879b19c5df3debe624045edc44e2"
   solver-name = "gps-cdcl"
   solver-version = 1
