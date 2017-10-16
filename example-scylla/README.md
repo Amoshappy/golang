@@ -16,7 +16,7 @@ To build each application run either
 
 or
 
-`go builde example-scylla-gocqlx.go`
+`go build example-scylla-gocqlx.go`
 
 ## Before running
 
