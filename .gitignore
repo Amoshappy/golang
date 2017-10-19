@@ -3,3 +3,5 @@ example-etcdv3/vendor/github.com/coreos/etcd/tools/functional-tester/.DS_Store
 example-rabbitmq/example-rabbitmq
 example-mysql/example-mysql
 example-mysql/example-mysql-sqlx
+example-scylla/example-scylla
+example-scylla/example-scylla-gocqlx
