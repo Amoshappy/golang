@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -64,14 +67,41 @@ func main() {
 	endpointlist := os.Getenv("COMPOSE_ETCD_ENDPOINTS")
 	username := os.Getenv("COMPOSE_ETCD_USER")
 	password := os.Getenv("COMPOSE_ETCD_PASS")
+	certpath := os.Getenv("PATH_TO_ETCD_CERT")
 
 	endpoints := strings.Split(endpointlist, ",")
 
-	cfg := clientv3.Config{
-		Endpoints:   endpoints,
-		Username:    username,
-		Password:    password,
-		DialTimeout: 5 * time.Second,
+	var cfg clientv3.Config
+
+	if len(certpath) != 0 {
+
+		// If a certificate path is given, assume a self-signed verification
+		// certificate
+		// Read the certificate into a file
+		caCert, err := ioutil.ReadFile(certpath)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Create a certificate pool
+		caCertPool := x509.NewCertPool()
+		// and add the freshly read certificate to the new pool
+		caCertPool.AppendCertsFromPEM(caCert)
+
+		cfg = clientv3.Config{
+			Endpoints:   endpoints,
+			TLS:         &tls.Config{RootCAs: caCertPool},
+			Username:    username,
+			Password:    password,
+			DialTimeout: 5 * time.Second,
+		}
+	} else {
+		cfg = clientv3.Config{
+			Endpoints:   endpoints,
+			Username:    username,
+			Password:    password,
+			DialTimeout: 5 * time.Second,
+		}
 	}
 
 	etcdclient, err := clientv3.New(cfg)
