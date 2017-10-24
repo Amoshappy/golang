@@ -18,12 +18,12 @@ type item struct {
 	Definition string `json:"definition"`
 }
 
-var myclient *elastic.Client
+var client *elastic.Client
 
 func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		searchResult, err := myclient.Search().
+		searchResult, err := client.Search().
 			Index("grand_tour").
 			Type("words").
 			Do(context.TODO())
@@ -47,7 +47,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		newitem := item{r.Form.Get("word"),
 			r.Form.Get("definition")}
 
-		_, err := myclient.Index().
+		_, err := client.Index().
 			Index("grand_tour").
 			Type("words").
 			BodyJson(newitem).
@@ -66,9 +66,8 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	esuri := os.Getenv("COMPOSE_ELASTICSEARCH_URL")
 
-	client, err := elastic.NewClient(elastic.SetURL(esuri), elastic.SetSniff(false))
-
-	myclient = client
+	var err error
+	client, err = elastic.NewClient(elastic.SetURL(esuri), elastic.SetSniff(false))
 
 	if err != nil {
 		log.Fatal(err)
