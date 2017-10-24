@@ -26,7 +26,6 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		searchResult, err := myclient.Search().
 			Index("grand_tour").
 			Type("words").
-			//		Sort("added", false).
 			Do(context.TODO())
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
