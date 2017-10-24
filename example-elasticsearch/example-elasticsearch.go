@@ -27,17 +27,20 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 			Index("grand_tour").
 			Type("words").
 			Do(context.TODO())
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Header().Set("Content-Type", "application/json")
+
 		words := []item{}
 		var i item
 		for _, peritem := range searchResult.Each(reflect.TypeOf(i)) {
 			i := peritem.(item)
 			words = append(words, i)
 		}
+
+		w.Header().Set("Content-Type", "application/json")
 		newjson, err := json.Marshal(words)
 		w.Write(newjson)
 
