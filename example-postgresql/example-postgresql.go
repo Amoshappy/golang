@@ -30,10 +30,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer rows.Close()
 
-		// Create an array of
-
-		var items []*item
-		items = make([]*item, 0)
+		items := make([]*item, 0)
 		for rows.Next() {
 			myitem := new(item)
 			err = rows.Scan(&myitem.ID, &myitem.Word, &myitem.Definition)
