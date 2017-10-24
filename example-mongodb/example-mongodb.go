@@ -66,8 +66,8 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Connect to database:
-	// Connection string in $COMPOSEMONGODBURL
-	// Compse database certificate in composecert.pem
+	// Connection string in $COMPOSE_MONGODB_URL
+	// Comopse database certificate pointed to in $PATH_TO_MONGODB_CERT
 
 	// Building a TLS configuration
 	// Create a certificate pool for root certificates
