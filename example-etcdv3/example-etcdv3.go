@@ -74,7 +74,6 @@ func main() {
 	var cfg clientv3.Config
 
 	if len(certpath) != 0 {
-
 		// If a certificate path is given, assume a self-signed verification
 		// certificate
 		// Read the certificate into a file
