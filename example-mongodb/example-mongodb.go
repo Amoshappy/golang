@@ -38,12 +38,17 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		// Create an array of
 		var items []item
 		err := c.Find(nil).All(&items)
-
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
 		jsonstr, err := json.Marshal(items)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonstr)
 		return
@@ -67,7 +72,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	// Connect to database:
 	// Connection string in $COMPOSE_MONGODB_URL
-	// Comopse database certificate pointed to in $PATH_TO_MONGODB_CERT
+	// Compose database certificate pointed to in $PATH_TO_MONGODB_CERT
 
 	// Building a TLS configuration
 	// Create a certificate pool for root certificates
