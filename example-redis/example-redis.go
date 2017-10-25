@@ -1,13 +1,10 @@
 package main
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
-	"strings"
 
 	"github.com/garyburd/redigo/redis"
 )
@@ -68,23 +65,8 @@ func main() {
 	// Connection string in $COMPOSE_REDIS_URL
 
 	var err error
-	uri := os.Getenv("COMPOSE_REDIS_URL")
 
-	// If this is an TLS/SSL connection...
-	if strings.HasPrefix(uri, "rediss:") {
-		// We need to parse the URI
-		parsedURI, err := url.Parse(uri)
-		if err != nil {
-			log.Fatal(err)
-		}
-		// To create a TLS servername option because Compose uses SNI
-		tlsConfig := &tls.Config{ServerName: parsedURI.Hostname()}
-		tlsoption := redis.DialTLSConfig(tlsConfig)
-		// And we use that when connecting to let the certificate verify
-		conn, err = redis.DialURL(os.Getenv("COMPOSE_REDIS_URL"), tlsoption)
-	} else {
-		conn, err = redis.DialURL(os.Getenv("COMPOSE_REDIS_URL"))
-	}
+	conn, err = redis.DialURL(os.Getenv("COMPOSE_REDIS_URL"))
 
 	if err != nil {
 		log.Fatal(err)
