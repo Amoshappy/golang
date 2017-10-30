@@ -4,12 +4,13 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"encoding/json"
-	rethink "gopkg.in/gorethink/gorethink.v2"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
+
+	rethink "gopkg.in/gorethink/gorethink.v2"
 )
 
 // This is a type to hold our word definitions in
@@ -62,16 +63,16 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	// Connect to database:
-	// Connection string in $COMPOSERETHINKDBURL
-	// Compse database certificate in composecert.pem
+	// Connection string in $COMPOSE_RETHINKDB_URL
+	// Compse database certificate in $PATH_TO_RETHINKDB_CERT
 	roots := x509.NewCertPool()
-	cert, err := ioutil.ReadFile("./composecert.pem")
+	cert, err := ioutil.ReadFile(os.Getenv("PATH_TO_RETHINKDB_CERT"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	roots.AppendCertsFromPEM(cert)
 
-	rethinkurl, err := url.Parse(os.Getenv("COMPOSERETHINKDBURL"))
+	rethinkurl, err := url.Parse(os.Getenv("COMPOSE_RETHINKDB_URL"))
 
 	if err != nil {
 		log.Fatal(err)
@@ -80,7 +81,7 @@ func main() {
 	password, setpass := rethinkurl.User.Password()
 
 	if !setpass {
-		log.Fatal("Password needs to be set in $COMPOSERETHINKDBURL")
+		log.Fatal("Password needs to be set in $COMPOSE_RETHINKDB_URL")
 	}
 
 	session, err = rethink.Connect(rethink.ConnectOpts{
