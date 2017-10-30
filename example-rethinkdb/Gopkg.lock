@@ -2,13 +2,7 @@
 
 
 [[projects]]
-  name = "github.com/Sirupsen/logrus"
-  packages = ["."]
-  revision = "f006c2ac4710855cf0f916dd6b77acf6b048dc6e"
-  version = "v1.0.3"
-
-[[projects]]
-  name = "github.com/cenk/backoff"
+  name = "github.com/cenkalti/backoff"
   packages = ["."]
   revision = "61153c768f31ee5f130071d08fc82b85208528de"
   version = "v1.1.0"
@@ -24,6 +18,12 @@
   name = "github.com/hailocab/go-hostpool"
   packages = ["."]
   revision = "e80d13ce29ede4452c43dea11e79b9bc8a15b478"
+
+[[projects]]
+  name = "github.com/sirupsen/logrus"
+  packages = ["."]
+  revision = "f006c2ac4710855cf0f916dd6b77acf6b048dc6e"
+  version = "v1.0.3"
 
 [[projects]]
   branch = "master"
@@ -44,26 +44,20 @@
   revision = "661970f62f5897bc0cd5fdca7e087ba8a98a8fa1"
 
 [[projects]]
-  name = "gopkg.in/dancannon/gorethink.v2"
-  packages = ["encoding","ql2","types"]
-  revision = "016a1d3b4d15951ab2e39bd3596718ba94d298ba"
-  version = "v2.2.2"
-
-[[projects]]
   branch = "v2.0.0"
   name = "gopkg.in/fatih/pool.v2"
   packages = ["."]
   revision = "010e0b745d12eaf8426c95f9c3924d81dd0b668f"
 
 [[projects]]
-  name = "gopkg.in/gorethink/gorethink.v2"
-  packages = ["."]
-  revision = "016a1d3b4d15951ab2e39bd3596718ba94d298ba"
-  version = "v2.2.2"
+  name = "gopkg.in/gorethink/gorethink.v3"
+  packages = [".","encoding","ql2","types"]
+  revision = "7f5bdfd858bb064d80559b2a32b86669c5de5d3b"
+  version = "v3.0.5"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3d6470e29788183e555bf8b1da9693626e64714b591c8a83c8be4611a5896dea"
+  inputs-digest = "83cdf275a5fa4d6c4d861ecea043076da2de5d950e60e68401d9ecb684c8ff46"
   solver-name = "gps-cdcl"
   solver-version = 1

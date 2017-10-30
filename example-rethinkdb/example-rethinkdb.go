@@ -10,7 +10,7 @@ import (
 	"net/url"
 	"os"
 
-	rethink "gopkg.in/gorethink/gorethink.v2"
+	rethink "gopkg.in/gorethink/gorethink.v3"
 )
 
 // This is a type to hold our word definitions in
@@ -98,7 +98,7 @@ func main() {
 	}
 
 	rethink.DBCreate("examples").Exec(session)
-	rethink.DB("examples").TableCreate("words").Exec(session)
+	rethink.DB("examples").TableCreate("words", rethink.TableCreateOpts{Replicas: 3}).Exec(session)
 	defer session.Close()
 
 	fs := http.FileServer(http.Dir("public"))
