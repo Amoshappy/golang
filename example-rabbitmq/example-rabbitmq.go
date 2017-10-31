@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/streadway/amqp"
 )
@@ -20,7 +21,6 @@ type item struct {
 // When we publish a message, it will be sent to this queue, via the exchange
 var routingKey = "words"
 var exchangeName = "grandtour"
-var qName = "sample"
 var connection *amqp.Connection
 var channel *amqp.Channel
 var queue amqp.Queue
@@ -28,33 +28,45 @@ var queue amqp.Queue
 func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		log.Println("Getting Message")
-		msg, ok, err := channel.Get(qName, true)
+		// Use synchronous Get to get a single message from
+		// the queue. In real life, prefer to Consume.
+		msg, ok, err := channel.Get(queue.Name, true)
 		if err != nil {
 			log.Fatal(err)
 		}
 
 		// Was there something waiting?
 		if ok {
+			// Write the retrieved payload straight into the body
 			w.Write(msg.Body)
 		} else {
-			w.Write(nil)
+			// Or if nothing was retrieved, a message reflecting that
+			w.Write([]byte("No message waiting"))
 		}
 		return
 	case "PUT":
 		r.ParseForm()
-		log.Println("Putting Message")
-		err := channel.Publish(exchangeName, routingKey, true, true, amqp.Publishing{
-			ContentType: "text/plain",
-			Body:        []byte(r.Form.Get("message")),
-		})
+		// Compose a message comprising of the form message and the time
+		// now
+		msg := r.Form.Get("message") + " " + time.Now().Format("15:04:05.00")
+
+		// Publish the messahe to the exchange with our routing key
+		err := channel.Publish(exchangeName,
+			routingKey,
+			false,
+			false,
+			amqp.Publishing{
+				ContentType: "text/plain",
+				Body:        []byte(msg),
+			})
+
 		if err != nil {
-			log.Println(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+			log.Fatal(err)
 		}
-		log.Println("Done")
+		// Set the response to accepted
 		w.WriteHeader(http.StatusAccepted)
+		// and rite the message that was sent back to the user
+		w.Write([]byte(msg))
 		return
 	}
 
@@ -66,57 +78,41 @@ func main() {
 	// Connection string in $COMPOSE_RABBITMQ_URL
 	var err error
 
-	// amqp.connect(connectionString, { servername: parsedurl.hostname }, function(err, conn) {
-	// 	conn.createChannel(function(err, ch) {
-	// 	  ch.assertExchange(exchangeName, 'direct', {durable: true});
-	// 	  ch.assertQueue(qName, {exclusive: false}, function(err, q) {
-	// 		console.log(" [*] Waiting for messages in the queue '%s'", q.queue);
-	// 		ch.bindQueue(q.queue, exchangeName, routingKey);
-	// 	  });
-	// 	});
-	// 	setTimeout(function() { conn.close(); }, 500);
-	//   });
-
-	log.Println("Dialing")
+	// The library handles amqps connections and sets Servername correctly
+	// so we can just connect here with the Dial() function
 	connection, err = amqp.Dial(os.Getenv("COMPOSE_RABBITMQ_URL"))
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer connection.Close()
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("Channel")
-
+	// We create a channel to communicate over. Note, if there is an
+	// error on the channel, we would need to recreate the channel.
 	channel, err = connection.Channel()
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("Exchange Declare")
-
+	// We can now create a durable exchange where we'll post our messages
 	err = channel.ExchangeDeclare(exchangeName, "direct", true, false, false, false, nil)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("Queue Declare")
-
-	queue, err = channel.QueueDeclare(qName, true, false, true, false, nil)
-
+	// And we'll declare a transient queue for our client
+	queue, err = channel.QueueDeclare("", false, false, false, false, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	log.Println("Queue Bind")
-
+	// Now we'll bind out transient queue to recieve messages with our
+	// routing key
 	err = channel.QueueBind(queue.Name, routingKey, exchangeName, false, nil)
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// With setup done we begin web serving
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
 	http.HandleFunc("/message", wordHandler)
