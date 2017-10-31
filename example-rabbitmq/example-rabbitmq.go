@@ -9,14 +9,6 @@ import (
 	"github.com/streadway/amqp"
 )
 
-// This is a type to hold our word definitions in
-// we specifiy both bson (for MongoDB) and json (for web)
-// naming for marshalling and unmarshalling
-type item struct {
-	Word       string `json:"word"`
-	Definition string `json:"definition"`
-}
-
 // Bind a queue to the exchange to listen for messages
 // When we publish a message, it will be sent to this queue, via the exchange
 var routingKey = "words"
