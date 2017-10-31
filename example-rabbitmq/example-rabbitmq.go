@@ -40,9 +40,10 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		// Compose a message comprising of the form message and the time
 		// now
+
 		msg := r.Form.Get("message") + " " + time.Now().Format("15:04:05.00")
 
-		// Publish the messahe to the exchange with our routing key
+		// Publish the message to the exchange with our routing key
 		err := channel.Publish(exchangeName,
 			routingKey,
 			false,
@@ -51,7 +52,6 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 				ContentType: "text/plain",
 				Body:        []byte(msg),
 			})
-
 		if err != nil {
 			log.Fatal(err)
 		}
