@@ -62,7 +62,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		// Now we simply INSERT the data into the table
 		// The id generates itself automatically
-		_, err := db.Exec("INSERT INTO words(word, definition) VALUES(?,?)", r.Form.Get("word"), r.Form.Get("definition"))
+		_, err := db.Exec("INSERT INTO words (word, definition) VALUES(?,?)", r.Form.Get("word"), r.Form.Get("definition"))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
