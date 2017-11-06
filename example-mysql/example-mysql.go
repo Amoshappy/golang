@@ -24,25 +24,24 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		// Query the database for the rows
-		rows, err := db.Query("SELECT * FROM words ORDER BY word ASC")
+		rows, err := db.Query("SELECT id,word,definition FROM words ORDER BY word ASC")
 		if err != nil {
 			log.Fatal(err)
 		}
 		defer rows.Close()
-		// Now create somewhere to hold the rows and temporary values
-		items := make([]item, 0)
-		var tmpid, tmpword, tmpdef string
+		// Now create somewhere to hold the rows
+		items := make([]*item, 0)
 		// Read each row
 		for rows.Next() {
-			// And scan the results into the temporary variables
-			err := rows.Scan(&tmpid, &tmpword, &tmpdef)
+			// Make an empty item
+			myitem := new(item)
+			// Scan results into that item
+			err := rows.Scan(&myitem.ID, &myitem.Word, &myitem.Definition)
 			if err != nil {
 				log.Fatal(err)
 			}
-			// For each row read, create a new item
-			newitem := item{ID: tmpid, Word: tmpword, Definition: tmpdef}
-			// and append it to our array
-			items = append(items, newitem)
+			// Then append it to our array
+			items = append(items, myitem)
 		}
 		// Make sure we finished cleanly
 		err = rows.Err()
