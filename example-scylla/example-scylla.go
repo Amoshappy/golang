@@ -30,10 +30,10 @@ var addresstranslator composeaddresstranslator.ComposeAddressTranslator
 func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		// We make an empty array...
-		items := make([]item, 0)
-		// Now send a query which returns an iterator to step through the rows
+		// We send a query which returns an iterator to step through the rows
 		iter := session.Query("SELECT my_table_id,word,definition FROM examples.words").Iter()
+		// Now we make an empty array...
+		items := make([]item, 0)
 		// Create some temporary variables to read the row into
 		var tmpid, tmpword, tmpdef string
 		// Iterate over the row, scanning the row data into variables
