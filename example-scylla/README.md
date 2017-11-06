@@ -4,7 +4,7 @@ Two Grand Tour examples of connecting to Scylla and reading/writing data are inc
 
 The first, `example-scylla`, is the definitive example using only the gocql driver.
 
-The second, `example-scylla-gocqlx`, uses the gocqlx extension to gocql to make the reading and writing of data more elegant.
+The second, `example-scylla-gocqlx`, uses the gocqlx extension to gocql to make the reading and writing of data more elegant. This example is kept in it's own `example-gocqlx` directory to avoid confusing linters and other tools.
 
 ## Building
 
@@ -16,7 +16,7 @@ To build each application run either
 
 or
 
-`go build example-scylla-gocqlx.go`
+`go build example-gocqlx/example-scylla-gocqlx.go`
 
 ## Before running
 
