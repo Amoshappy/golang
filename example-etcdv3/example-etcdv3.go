@@ -20,12 +20,12 @@ type item struct {
 	Definition string `json:"definition"`
 }
 
-var myetcdclient *clientv3.Client
+var etcdclient *clientv3.Client
 
 func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		resp, err := myetcdclient.Get(context.TODO(), "/grand_tour/words/", clientv3.WithPrefix())
+		resp, err := etcdclient.Get(context.TODO(), "/grand_tour/words/", clientv3.WithPrefix())
 
 		if err != nil {
 			log.Fatal(err)
@@ -48,11 +48,10 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	case "PUT":
 		r.ParseForm()
-		_, err := myetcdclient.Put(context.TODO(), "/grand_tour/words/"+r.Form.Get("word"), r.Form.Get("definition"))
+		_, err := etcdclient.Put(context.TODO(), "/grand_tour/words/"+r.Form.Get("word"), r.Form.Get("definition"))
 		if err != nil {
 			log.Fatal(err)
 		}
-		// items = append(items, item{time.Now().Format(time.UnixDate), r.Form.Get("word"), r.Form.Get("definition")})
 		w.WriteHeader(http.StatusAccepted)
 		return
 	}
@@ -61,6 +60,8 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	var err error
+
 	endpointlist := os.Getenv("COMPOSE_ETCD_ENDPOINTS")
 	username := os.Getenv("COMPOSE_ETCD_USER")
 	password := os.Getenv("COMPOSE_ETCD_PASS")
@@ -74,13 +75,11 @@ func main() {
 		DialTimeout: 5 * time.Second,
 	}
 
-	etcdclient, err := clientv3.New(cfg)
+	etcdclient, err = clientv3.New(cfg)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	myetcdclient = etcdclient
 
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
