@@ -15,7 +15,6 @@ import (
 )
 
 type item struct {
-	ID         string `json:"_id,omitempty"`
 	Word       string `json:"word"`
 	Definition string `json:"definition"`
 }
