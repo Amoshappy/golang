@@ -1,6 +1,0 @@
-package: github.com/compose-grandtour/golang/example-etcdv3
-import:
-- package: github.com/coreos/etcd
-  version: ^3.2.1
-  subpackages:
-  - clientv3
