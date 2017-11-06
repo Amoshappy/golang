@@ -24,7 +24,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		items := []item{}
-		err := db.Select(&items, "SELECT * FROM words ORDER BY word ASC")
+		err := db.Select(&items, "SELECT id,word,definition FROM words ORDER BY word ASC")
 		if err != nil {
 			log.Fatal(err)
 		}
