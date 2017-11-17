@@ -19,7 +19,6 @@ $(document).ready(function() {
 
   $('#add-word').submit(function(e) {
     e.preventDefault();
-    alert(this)
     $.ajax({
       url: '/words',
       type: 'PUT',
