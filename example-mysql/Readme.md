@@ -8,7 +8,7 @@ The second, `example-mysql-sqlx`, uses the sqlx extension to golang sql to make 
 
 ## Building
 
-This example comes with vendored dependencies, managed by `[dep])(https://github.com/golang/dep)`. Install that and run `dep ensure` to check and install any missing dependencies.
+This example comes with vendored dependencies, managed by `[dep](https://github.com/golang/dep)`. Install that and run `dep ensure` to check and install any missing dependencies.
 
 To build each application run either
 
@@ -22,7 +22,7 @@ or
 
 One environment variables must be set: `COMPOSE_MYSQL_URLS`.
 
-* COMPOSE_MYSQL_URL - the Compose connection string for the MySQK database. Remember to create a user for ScyllaDB and include that user's credentials in the URL.
+* COMPOSE_MYSQL_URL - the Compose connection string for the MySQL database. Remember to create a user for ScyllaDB and include that user's credentials in the URL.
 
 ### Examples
 
