@@ -20,7 +20,7 @@ or
 
 ## Before running
 
-One environment variables must be set: `COMPOSE_MYSQL_URLS`.
+One environment variables must be set: `COMPOSE_MYSQL_URL`.
 
 * COMPOSE_MYSQL_URL - the Compose connection string for the MySQL database. Remember to create a user for ScyllaDB and include that user's credentials in the URL.
 
