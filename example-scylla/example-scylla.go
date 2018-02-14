@@ -31,7 +31,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		// We send a query which returns an iterator to step through the rows
-		iter := session.Query("SELECT my_table_id,word,definition FROM examples.words").Iter()
+		iter := session.Query("SELECT my_table_id,word,definition FROM grand_tour.words").Iter()
 		// Now we make an empty array...
 		items := make([]item, 0)
 		// Create some temporary variables to read the row into
@@ -63,7 +63,7 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 		// We need to create a UUID for the new record
 		uuid, _ := gocql.RandomUUID()
 		// Now we simply INSERT the data into the table, complete with uuid
-		err := session.Query("INSERT INTO examples.words(my_table_id, word, definition) VALUES(?,?,?)", uuid, r.Form.Get("word"), r.Form.Get("definition")).Exec()
+		err := session.Query("INSERT INTO grand_tour.words(my_table_id, word, definition) VALUES(?,?,?)", uuid, r.Form.Get("word"), r.Form.Get("definition")).Exec()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -138,13 +138,13 @@ func main() {
 	defer session.Close()
 
 	// Now we create a new keyspace if we need it
-	err = session.Query("CREATE KEYSPACE IF NOT EXISTS examples WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '3' }").Exec()
+	err = session.Query("CREATE KEYSPACE IF NOT EXISTS grand_tour WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '3' }").Exec()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// And similarly we create the table if we need it too
-	err = session.Query("CREATE TABLE IF NOT EXISTS examples.words (my_table_id uuid, word text, definition text, PRIMARY KEY(my_table_id))").Exec()
+	err = session.Query("CREATE TABLE IF NOT EXISTS grand_tour.words (my_table_id uuid, word text, definition text, PRIMARY KEY(my_table_id))").Exec()
 	if err != nil {
 		log.Fatal(err)
 	}
