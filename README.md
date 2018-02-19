@@ -8,7 +8,7 @@ Find the articles about the Go section of the Compose Grand Tour here:
 * [Go and Compose - Redis, RethinkDB, and RabbitMQ](https://www.compose.com/articles/go-and-compose-redis-rethinkdb-and-rabbitmq/)
 * [Go and Compose - etcd v3, Scylla, and MySQL](https://www.compose.com/articles/go-and-compose-etcd-v3-scylla-and-mysql/)
 
-This repo contains the apps written in Go. It is intended to run locally.
+This repo contains the apps written in Go. They are intended to be run locally.
 
 ## Running the Examples
 
