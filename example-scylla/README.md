@@ -8,7 +8,7 @@ The second, `example-scylla-gocqlx`, uses the gocqlx extension to gocql to make 
 
 ## Building
 
-This example comes with vendored dependencies, managed by `[dep])(https://github.com/golang/dep)`. Install that and run `dep ensure` to check and install any missing dependencies.
+This example comes with vendored dependencies, managed by `[dep](https://github.com/golang/dep)`. Install that and run `dep ensure` to check and install any missing dependencies.
 
 To build each application run either
 
@@ -22,8 +22,8 @@ or
 
 Two environment variables must be set: `COMPOSE_SCYLLA_URLS` and `COMPOSE_SCYLLA_MAPS`
 
-* COMPOSE_SCYLLADB_URL - the Compose connection string for the ScyllaDB database. Remember to create a user for ScyllaDB and include that user's credentials in the URL.
-* COMPOSE_SCYLLADB_MAPS - the Address Translation Map for the ScyllaDB database. Copy the full contents as shown on your deployment's overview page.
+* COMPOSE_SCYLLA_URL - the Compose connection string for the ScyllaDB database. Remember to create a user for ScyllaDB and include that user's credentials in the URL.
+* COMPOSE_SCYLLA_MAPS - the Address Translation Map for the ScyllaDB database. Copy the full contents as shown on your deployment's overview page.
 
 ### Examples
 
