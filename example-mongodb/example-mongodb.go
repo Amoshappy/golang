@@ -12,8 +12,8 @@ import (
 	"os"
 	"strings"
 
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/globalsign/mgo"
+	"github.com/globalsign/mgo/bson"
 )
 
 // This is a type to hold our word definitions in
@@ -42,13 +42,13 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		
+
 		jsonstr, err := json.Marshal(items)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(jsonstr)
 		return
@@ -74,6 +74,12 @@ func main() {
 	// Connection string in $COMPOSE_MONGODB_URL
 	// Compose database certificate pointed to in $PATH_TO_MONGODB_CERT
 
+	// Get the environment variable with the connection string
+	connectionString, present := os.LookupEnv("COMPOSE_MONGODB_URL")
+	if !present {
+		log.Fatal("Need to set COMPOSE_MONGODB_URL environment variable")
+	}
+
 	// Building a TLS configuration
 	// Create a certificate pool for root certificates
 	// Then load that pool with our certificate
@@ -86,8 +92,6 @@ func main() {
 	tlsConfig := &tls.Config{}
 	tlsConfig.RootCAs = roots
 
-	// Get the environment variable with the connection string
-	connectionString := os.Getenv("COMPOSE_MONGODB_URL")
 	// Currently mgo errors out if it sees the ?ssl=true option on the
 	// connectionString, so we'll trim that off
 	trimmedConnectionString := strings.TrimSuffix(connectionString, "?ssl=true")

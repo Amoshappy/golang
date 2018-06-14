@@ -6,3 +6,4 @@ example-mysql/example-mysql-sqlx
 example-scylla/example-scylla
 example-scylla/example-scylla-gocqlx
 example-rethinkdb/example-rethinkdb
+example-mongodb-go-driver/example-mongodb-go-driver
