@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/mongodb/mongo-go-driver/bson"
 	"github.com/mongodb/mongo-go-driver/bson/objectid"
 	"github.com/mongodb/mongo-go-driver/mongo"
 )
@@ -26,30 +27,36 @@ var client *mongo.Client
 func wordHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		// Use the session to get the DB and then the collection
-		// Using an empty string for DB() gets the datbase specified
-		// in the connection string
 		c := client.Database("grand_tour").Collection("words")
 
-		// Create an array of
-		var items []item
-		cur, err := c.Find(context.Background(), nil)
+		sort, err := mongo.Opt.Sort(bson.NewDocument(bson.EC.Int32("word", 1)))
+
+		if err != nil {
+			log.Fatal("Sort error ", err)
+		}
+
+		cur, err := c.Find(nil, nil, sort)
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
 		defer cur.Close(context.Background())
 
-		for cur.Next(context.Background()) {
+		var items []item
+
+		for cur.Next(nil) {
 			item := item{}
 			err := cur.Decode(&item)
 			if err != nil {
-				log.Fatal("Decode check ", err)
+				log.Fatal("Decode error ", err)
 			}
 			items = append(items, item)
 		}
+
 		if err := cur.Err(); err != nil {
-			log.Fatal("Cursor check ", err)
+			log.Fatal("Cursor error ", err)
 		}
 
 		jsonstr, err := json.Marshal(items)
@@ -64,8 +71,10 @@ func wordHandler(w http.ResponseWriter, r *http.Request) {
 	case "PUT":
 		r.ParseForm()
 		c := client.Database("grand_tour").Collection("words")
-		newItem := item{ID: objectid.New(), Word: r.Form.Get("word"), Definition: r.Form.Get("definition")}
-		_, err := c.InsertOne(context.Background(), newItem, nil)
+		// newItem := item{ID: objectid.New(), Word: r.Form.Get("word"), Definition: r.Form.Get("definition")}
+		// _, err := c.InsertOne(nil, newItem)
+		newItemDoc := bson.NewDocument(bson.EC.String("word", r.Form.Get("word")), bson.EC.String("definition", r.Form.Get("definition")))
+		_, err := c.InsertOne(nil, newItemDoc)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -103,13 +112,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	err = client.Connect(context.TODO())
+	err = client.Connect(nil)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer client.Disconnect(context.TODO())
+	defer client.Disconnect(nil)
 
 	fs := http.FileServer(http.Dir("public"))
 	http.Handle("/", fs)
