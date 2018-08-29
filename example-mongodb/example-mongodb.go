@@ -80,18 +80,22 @@ func main() {
 		log.Fatal("Need to set COMPOSE_MONGODB_URL environment variable")
 	}
 
-	// Building a TLS configuration
-	// Create a certificate pool for root certificates
-	// Then load that pool with our certificate
-	roots := x509.NewCertPool()
-	if ca, err := ioutil.ReadFile(os.Getenv("PATH_TO_MONGODB_CERT")); err == nil {
-		roots.AppendCertsFromPEM(ca)
-	}
-	// Then create a TLS config object
-	// and save that new root pool in it as it's only CA
-	tlsConfig := &tls.Config{}
-	tlsConfig.RootCAs = roots
+	certpath, present := os.LookupEnv("PATH_TO_MONGODB_CERT")
 
+	tlsConfig := &tls.Config{}
+
+	if present {
+		// Building a TLS configuration
+		// Create a certificate pool for root certificates
+		// Then load that pool with our certificate
+		roots := x509.NewCertPool()
+		if ca, err := ioutil.ReadFile(certpath); err == nil {
+			roots.AppendCertsFromPEM(ca)
+		}
+		// Then create a TLS config object
+		// and save that new root pool in it as it's only CA
+		tlsConfig.RootCAs = roots
+	}
 	// Currently mgo errors out if it sees the ?ssl=true option on the
 	// connectionString, so we'll trim that off
 	trimmedConnectionString := strings.TrimSuffix(connectionString, "?ssl=true")
