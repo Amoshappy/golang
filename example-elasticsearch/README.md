@@ -2,7 +2,7 @@
 
 ## Build notes
 
-Before building, `run go get gopkg.in/olivere/elastic.v5` to install the appropriate library.
+Before building, run `go get gopkg.in/olivere/elastic.v5` to install the appropriate library.
 
 ## Run notes
 
